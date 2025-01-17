@@ -870,12 +870,12 @@ let msg = read(pipeline(ignorestatus(`$(Base.julia_cmd()) --startup-file=no --co
             end
         end'`), stderr=devnull), String)
     @test occursin(r"""
-        Test Summary: | Pass  Fail  Total  Time
-        Foo Tests     |    2     2      4  \s*\d*.\ds
-          Animals     |    1     1      2  \s*\d*.\ds
-            Felines   |    1            1  \s*\d*.\ds
-            Canines   |          1      1  \s*\d*.\ds
-          Arrays      |    1     1      2  \s*\d*.\ds
+        Test Summary: \| Pass  Fail  Total  Time
+        Foo Tests     \|    2     2      4  \s*\d*\.\ds
+          Animals     \|    1     1      2  \s*\d*\.\ds
+            Felines   \|    1            1  \s*\d*\.\ds
+            Canines   \|          1      1  \s*\d*\.\ds
+          Arrays      \|    1     1      2  \s*\d*\.\ds
         """, msg)
 end
 
@@ -1272,9 +1272,9 @@ end
 @testset "failfast option" begin
     @testset "non failfast (default)" begin
         expected = r"""
-        Test Summary: | Pass  Fail  Error  Total  Time
-        Foo           |    1     2      1      4  \s*\d*.\ds
-          Bar         |    1     1             2  \s*\d*.\ds
+        Test Summary: \| Pass  Fail  Error  Total  Time
+        Foo           \|    1     2      1      4  \s*\d*\.\ds
+          Bar         \|    1     1             2  \s*\d*\.\ds
         """
 
         mktemp() do f, _
@@ -1298,8 +1298,8 @@ end
     end
     @testset "failfast" begin
         expected = r"""
-        Test Summary: | Fail  Total  Time
-        Foo           |    1      1  \s*\d*.\ds
+        Test Summary: \| Fail  Total  Time
+        Foo           \|    1      1  \s*\d*\.\ds
         """
 
         mktemp() do f, _
@@ -1323,9 +1323,9 @@ end
     end
     @testset "failfast passes to child testsets" begin
         expected = r"""
-        Test Summary: | Fail  Total  Time
-        PackageName   |    1      1  \s*\d*.\ds
-          1           |    1      1  \s*\d*.\ds
+        Test Summary: \| Fail  Total  Time
+        Foo           \|    1      1  \s*\d*\.\ds
+          1           \|    1      1  \s*\d*\.\ds
         """
 
         mktemp() do f, _
@@ -1349,8 +1349,8 @@ end
     end
     @testset "failfast via env var" begin
         expected = r"""
-        Test Summary: | Fail  Total  Time
-        Foo           |    1      1  \s*\d*.\ds
+        Test Summary: \| Fail  Total  Time
+        Foo           \|    1      1  \s*\d*\.\ds
         """
 
         mktemp() do f, _
