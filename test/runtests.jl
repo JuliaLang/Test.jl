@@ -1201,17 +1201,17 @@ end
 
 @testset "verbose option" begin
     expected = r"""
-    Test Summary:             | Pass  Total  Time
-    Parent                    |    9      9  \s*\d*.\ds
-      Child 1                 |    3      3  \s*\d*.\ds
-        Child 1.1 (long name) |    1      1  \s*\d*.\ds
-        Child 1.2             |    1      1  \s*\d*.\ds
-        Child 1.3             |    1      1  \s*\d*.\ds
-      Child 2                 |    3      3  \s*\d*.\ds
-      Child 3                 |    3      3  \s*\d*.\ds
-        Child 3.1             |    1      1  \s*\d*.\ds
-        Child 3.2             |    1      1  \s*\d*.\ds
-        Child 3.3             |    1      1  \s*\d*.\ds
+    Test Summary:             \| Pass  Total  Time
+    Parent                    \|    9      9  \s*\d*\.\ds
+      Child 1                 \|    3      3  \s*\d*\.\ds
+        Child 1\.1 \(long name\) \|    1      1  \s*\d*\.\ds
+        Child 1\.2             \|    1      1  \s*\d*\.\ds
+        Child 1\.3             \|    1      1  \s*\d*\.\ds
+      Child 2                 \|    3      3  \s*\d*\.\ds
+      Child 3                 \|    3      3  \s*\d*\.\ds
+        Child 3\.1             \|    1      1  \s*\d*\.\ds
+        Child 3\.2             \|    1      1  \s*\d*\.\ds
+        Child 3\.3             \|    1      1  \s*\d*\.\ds
     """
 
     mktemp() do f, _
