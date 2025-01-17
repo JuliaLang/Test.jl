@@ -1054,6 +1054,20 @@ end
 #-----------------------------------------------------------------------
 
 """
+    VerbosityLevel
+
+Different possible levels of verbosity for test output as reported by DefaultTestSet.
+
+Options are `only_failures`, `this_testset`, and `this_testset_and_children`.
+"""
+@enum VerbosityLevel only_failures=0 this_testset=1 this_testset_and_children=2
+
+# The established user interface for setting verbosity level is `verbose = true/false`,
+# hence the below conversion. Note that by virtue of being an Enum, we can also use the Ints
+# 0, 1, 2 to construct a `VerbosityLevel`.
+VerbosityLevel(x::Bool) = x ? this_testset : only_failures
+
+"""
     DefaultTestSet
 
 If using the DefaultTestSet, the test results will be recorded. If there
@@ -1065,14 +1079,25 @@ mutable struct DefaultTestSet <: AbstractTestSet
     results::Vector{Any}
     n_passed::Int
     anynonpass::Bool
-    verbose::Bool
+    verbose::VerbosityLevel
     showtiming::Bool
     time_start::Float64
     time_end::Union{Float64,Nothing}
     failfast::Bool
     file::Union{String,Nothing}
 end
-function DefaultTestSet(desc::AbstractString; verbose::Bool = false, showtiming::Bool = true, failfast::Union{Nothing,Bool} = nothing, source = nothing)
+function DefaultTestSet(desc::AbstractString; verbose = nothing, showtiming::Bool = true, failfast::Union{Nothing,Bool} = nothing, source = nothing)
+    if isnothing(verbose)
+        parent_ts = get_testset()
+        if parent_ts isa DefaultTestSet && (parent_ts.verbose == this_testset_and_children)
+            verbose = this_testset_and_children
+        else
+            verbose = only_failures
+        end
+    elseif !(verbose isa VerbosityLevel)
+        verbose = VerbosityLevel(verbose)
+    end
+
     if isnothing(failfast)
         # pass failfast state into child testsets
         parent_ts = get_testset()
@@ -1230,7 +1255,7 @@ function get_alignment(ts::DefaultTestSet, depth::Int)
     # The minimum width at this depth is
     ts_width = 2*depth + length(ts.description)
     # If not verbose and all passing, no need to look at children
-    !ts.verbose && !ts.anynonpass && return ts_width
+    (ts.verbose == only_failures) && !ts.anynonpass && return ts_width
     # Return the maximum of this width and the minimum width
     # for all children (if they exist)
     isempty(ts.results) && return ts_width
@@ -1344,7 +1369,7 @@ function print_counts(ts::DefaultTestSet, depth, align,
 
     # Only print results at lower levels if we had failures or if the user
     # wants.
-    if (np + nb != subtotal) || (ts.verbose)
+    if (np + nb != subtotal) || (ts.verbose >= this_testset)
         for t in ts.results
             if isa(t, DefaultTestSet)
                 print_counts(t, depth + 1, align,
